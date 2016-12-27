@@ -26,21 +26,26 @@ public class Tracking : MonoBehaviour {
     }
 
     public TrackingFrame currFrame = new TrackingFrame();
-    private TcpClient client;
-    private Thread thread;
+    private Thread mainThread;
 
-    void Start() {
+    void Awake() {
         if (tracking == null) {
             tracking = this;
         }
 
-        thread = new Thread(clientThread);
-        thread.Start();
+        mainThread = new Thread(clientThread);
+        mainThread.Start();
+    }
+
+    void OnApplicationQuit() {
+        if (mainThread.IsAlive) {
+            mainThread.Abort();
+        }
     }
 
     private void clientThread() {
         IPAddress clientIP = IPAddress.Parse(IP_ADDRESS);
-        client = new TcpClient();
+        TcpClient client = new TcpClient();
         client.Connect(IP_ADDRESS, PORT);
 
         NetworkStream networkStream = client.GetStream();
@@ -72,11 +77,6 @@ public class Tracking : MonoBehaviour {
                 frame.rot[id] = new Vector3(rx, ry, rz);
             }
         }
-    }
-
-    void OnApplicationQuit() {
-        client.Close();
-        thread.Abort();
     }
 
     static public bool getTransform(int id, out Vector3 position, out Vector3 rotation) {
