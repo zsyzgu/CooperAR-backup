@@ -9,7 +9,7 @@ using System.Net.Sockets;
 using System;
 
 public class VideoManager : MonoBehaviour {
-    static VideoManager videoManager = null;
+    /*static VideoManager videoManager = null;
     static int MAX_STUDENTS = StudentSpawner.MAX_STUDENTS;
 
     const string IP_ADDRESS = "127.0.0.1";
@@ -52,7 +52,6 @@ public class VideoManager : MonoBehaviour {
         NetworkStream networkStream = client.GetStream();
 
         while (true) {
-            byte[] imageInfo = new byte[5];
             int id = networkStream.ReadByte();
             int len = networkStream.Read(buffer, 0, buffer.Length);
             if (len == 0) {
@@ -73,5 +72,5 @@ public class VideoManager : MonoBehaviour {
             texture = null;
             return false;
         }
-    }
+    }*/
 }

@@ -1,12 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+#if WINDOWS_UWP
+
+#else
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.IO;
+#endif
 
 public class OptitrackSimulator : MonoBehaviour {
+#if WINDOWS_UWP
+
+#else
     const string IP_ADDRESS = "127.0.0.1";
     const int PORT = 8520;
 
@@ -46,4 +54,5 @@ public class OptitrackSimulator : MonoBehaviour {
             Thread.Sleep(10);
         }
     }
+#endif
 }

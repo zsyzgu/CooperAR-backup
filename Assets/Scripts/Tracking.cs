@@ -1,12 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Threading;
+
+
+#if WINDOWS_UWP
+
+#else
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.IO;
+#endif
+
 
 public class Tracking : MonoBehaviour {
+#if WINDOWS_UWP
+
+#else
     static Tracking tracking = null;
     static int MAX_STUDENTS = StudentSpawner.MAX_STUDENTS;
 
@@ -44,7 +54,6 @@ public class Tracking : MonoBehaviour {
     }
 
     private void clientThread() {
-        IPAddress clientIP = IPAddress.Parse(IP_ADDRESS);
         TcpClient client = new TcpClient();
         client.Connect(IP_ADDRESS, PORT);
 
@@ -90,4 +99,5 @@ public class Tracking : MonoBehaviour {
             return false;
         }
     }
+#endif
 }

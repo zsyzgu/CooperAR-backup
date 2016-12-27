@@ -8,7 +8,7 @@ using OpenCvSharp;
 using OpenCvSharp.CPlusPlus;
 
 public class CaptureSimulator : MonoBehaviour {
-    const string IP_ADDRESS = "127.0.0.1";
+    /*const string IP_ADDRESS = "127.0.0.1";
     const int PORT = 8888;
 
     public int captureID = 0;
@@ -41,5 +41,5 @@ public class CaptureSimulator : MonoBehaviour {
             networkStream.Flush();
             Thread.Sleep(10);
         }
-    }
+    }*/
 }

@@ -33,7 +33,7 @@ public class StudentSpawner : MonoBehaviour {
     private bool shouldExist(int id) {
         Vector3 pos;
         Vector3 rot;
-        Texture2D texture;
-        return (Tracking.getTransform(id, out pos, out rot) || VideoManager.getFrame(id, out texture));
+        return false;
+        //return Tracking.getTransform(id, out pos, out rot);
     }
 }
