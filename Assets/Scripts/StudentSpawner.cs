@@ -33,7 +33,6 @@ public class StudentSpawner : MonoBehaviour {
     private bool shouldExist(int id) {
         Vector3 pos;
         Vector3 rot;
-        return false;
-        //return Tracking.getTransform(id, out pos, out rot);
+        return Tracking.getTransform(id, out pos, out rot);
     }
 }

@@ -4,8 +4,6 @@ using UnityEngine;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using OpenCvSharp;
-using OpenCvSharp.CPlusPlus;
 
 public class CaptureSimulator : MonoBehaviour {
     /*const string IP_ADDRESS = "127.0.0.1";

@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using OpenCvSharp;
-using OpenCvSharp.CPlusPlus;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
