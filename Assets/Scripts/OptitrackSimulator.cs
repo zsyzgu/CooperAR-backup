@@ -1,19 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 #if WINDOWS_UWP
 using System;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
-using Windows.Networking;
-using System.Text;
-using Windows.Storage.Streams;
 #else
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.IO;
 #endif
 
 public class OptitrackSimulator : MonoBehaviour {
@@ -52,22 +49,16 @@ public class OptitrackSimulator : MonoBehaviour {
     }
 
     private async void connectionReceived(StreamSocketListener listener, StreamSocketListenerConnectionReceivedEventArgs args) {
-        DataWriter writer = new DataWriter(args.Socket.OutputStream);
-        
+        Stream stream = args.Socket.OutputStream.AsStreamForWrite();
+        StreamWriter writer = new StreamWriter(stream);
+
         while (mainTask != null) {
-            writeLine(writer, "begin");
-            writeLine(writer, getRbMessage());
-            writeLine(writer, "end");
+            await writer.WriteLineAsync("begin");
+            await writer.WriteLineAsync(getRbMessage());
+            await writer.WriteLineAsync("end");
+            await writer.FlushAsync();
             await Task.Delay(TimeSpan.FromSeconds(0.01));
         }
-    }
-
-    private async void writeLine(DataWriter writer, string msg) {
-        writer.MeasureString(msg);
-        writer.WriteString(msg);
-        await writer.StoreAsync();
-        await writer.FlushAsync();
-        writer.DetachStream();
     }
 #else
     private Thread mainThread;

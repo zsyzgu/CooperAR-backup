@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 
 #if WINDOWS_UWP
@@ -8,11 +6,8 @@ using System;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using Windows.Networking;
-using System.Text;
-using Windows.Storage.Streams;
 #else
 using System.Threading;
-using System.Net;
 using System.Net.Sockets;
 #endif
 
@@ -94,28 +89,15 @@ public class Tracking : MonoBehaviour {
     private async void clientThread() {
         StreamSocket socket = new StreamSocket();
         await socket.ConnectAsync(new HostName(IP_ADDRESS), "" + PORT);
-        
-        DataReader reader = new DataReader(socket.InputStream);
-        
+        Stream stream = socket.InputStream.AsStreamForRead();
+        StreamReader reader = new StreamReader(stream);
+
         while (mainTask != null) {
-            string msg = await readLine(reader);
+            string msg = await reader.ReadLineAsync();
             if (!recvMessage(msg)) {
                 break;
             }
         }
-        await socket.CancelIOAsync();
-        socket.Dispose();
-    }
-
-    private async Task<string> readLine(DataReader reader) {
-        StringBuilder strBuilder = new StringBuilder();
-        await reader.LoadAsync(256);
-        while (reader.UnconsumedBufferLength > 0) {
-            strBuilder.Append(reader.ReadString(reader.UnconsumedBufferLength));
-            await reader.LoadAsync(256);
-        }
-        reader.DetachStream();
-        return strBuilder.ToString();
     }
 
 #else

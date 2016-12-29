@@ -1,21 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Net;
+using System.IO;
+using System.Text;
 using System.Net.Sockets;
 using System.Threading;
+using OpenCvSharp;
+using OpenCvSharp.CPlusPlus;
 
 public class CaptureSimulator : MonoBehaviour {
-    /*const string IP_ADDRESS = "127.0.0.1";
+    const string IP_ADDRESS = "127.0.0.1";
     const int PORT = 8888;
 
     public int captureID = 0;
     Thread mainThread;
 
-    void Awake () {
+    void Awake() {
         mainThread = new Thread(run);
         mainThread.Start();
-	}
+    }
 
     void OnApplicationQuit() {
         if (mainThread.IsAlive) {
@@ -28,16 +30,15 @@ public class CaptureSimulator : MonoBehaviour {
         client.Connect(IP_ADDRESS, PORT);
 
         NetworkStream networkStream = client.GetStream();
+        StreamWriter writer = new StreamWriter(networkStream);
 
         CvCapture capture = CvCapture.FromCamera(captureID);
         while (true) {
-            networkStream.WriteByte((byte)captureID);
-            networkStream.Flush();
             Mat mat = new Mat(capture.QueryFrame());
             byte[] imageData = mat.ToBytes(".jpg");
-            networkStream.Write(imageData, 0, imageData.Length);
+            writer.WriteLine(Encoding.UTF8.GetString(imageData));
             networkStream.Flush();
             Thread.Sleep(10);
         }
-    }*/
+    }
 }

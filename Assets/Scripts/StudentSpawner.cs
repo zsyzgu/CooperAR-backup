@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class StudentSpawner : MonoBehaviour {
     public static int MAX_STUDENTS = 10;
@@ -20,8 +18,7 @@ public class StudentSpawner : MonoBehaviour {
                     students[i] = Instantiate(studentPrefab);
                     students[i].GetComponent<Student>().setID(i);
                 }
-            }
-            else {
+            } else {
                 if (students[i] != null) {
                     Destroy(students[i]);
                     students[i] = null;

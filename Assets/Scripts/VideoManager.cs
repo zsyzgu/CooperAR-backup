@@ -1,13 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.IO;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System;
+using OpenCvSharp;
+using OpenCvSharp.CPlusPlus;
 
 public class VideoManager : MonoBehaviour {
-    /*static VideoManager videoManager = null;
+    static VideoManager videoManager = null;
     static int MAX_STUDENTS = StudentSpawner.MAX_STUDENTS;
 
     const string IP_ADDRESS = "127.0.0.1";
@@ -28,9 +30,7 @@ public class VideoManager : MonoBehaviour {
 	}
 
     void OnApplicationQuit() {
-        if (mainThread.IsAlive) {
-            mainThread.Abort();
-        }
+        mainThread = null;
     }
 
     private void serverThread() {
@@ -39,7 +39,7 @@ public class VideoManager : MonoBehaviour {
 
         listener.Start();
         
-        while (true) {
+        while (mainThread != null) {
             TcpClient client = listener.AcceptTcpClient();
             Thread thread = new Thread(() => msgThread(client));
             thread.Start();
@@ -48,15 +48,10 @@ public class VideoManager : MonoBehaviour {
 
     private void msgThread(TcpClient client) {
         NetworkStream networkStream = client.GetStream();
+        StreamReader reader = new StreamReader(networkStream);
 
-        while (true) {
-            int id = networkStream.ReadByte();
-            int len = networkStream.Read(buffer, 0, buffer.Length);
-            if (len == 0) {
-                break;
-            }
-            videos[id] = new byte[len];
-            Array.Copy(buffer, videos[0], len);
+        while (mainThread != null) {
+            videos[0] = Encoding.UTF8.GetBytes(reader.ReadLine());
         }
     }
 
@@ -70,5 +65,5 @@ public class VideoManager : MonoBehaviour {
             texture = null;
             return false;
         }
-    }*/
+    }
 }

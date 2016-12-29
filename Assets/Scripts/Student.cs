@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Student : MonoBehaviour {
@@ -31,9 +29,9 @@ public class Student : MonoBehaviour {
     }
 
     private void dealVideo() {
-        /*Texture2D texture;
+        Texture2D texture;
         if (VideoManager.getFrame(id, out texture)) {
             rawImage.GetComponent<RawImage>().texture = texture;
-        }*/
+        }
     }
 }
