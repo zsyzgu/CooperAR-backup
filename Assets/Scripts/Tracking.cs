@@ -128,6 +128,7 @@ public class Tracking : MonoBehaviour {
                 break;
             }
         }
+
         client.Close();
     }
 #endif

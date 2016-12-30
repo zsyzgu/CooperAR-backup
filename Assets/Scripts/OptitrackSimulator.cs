@@ -78,8 +78,7 @@ public class OptitrackSimulator : MonoBehaviour {
         listener.Start();
         TcpClient client = listener.AcceptTcpClient();
         StreamWriter sw = new StreamWriter(client.GetStream());
-
-        float ry = 0f;
+        
         while (mainThread != null) {
             sw.WriteLine("begin");
             sw.WriteLine(getRbMessage());
@@ -87,6 +86,7 @@ public class OptitrackSimulator : MonoBehaviour {
             sw.Flush();
             Thread.Sleep(10);
         }
+
         client.Close();
     }
 #endif

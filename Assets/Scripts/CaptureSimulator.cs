@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Net;
 using System.IO;
-using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using OpenCvSharp;
@@ -30,15 +28,16 @@ public class CaptureSimulator : MonoBehaviour {
         client.Connect(IP_ADDRESS, PORT);
 
         NetworkStream networkStream = client.GetStream();
-        StreamWriter writer = new StreamWriter(networkStream);
 
         CvCapture capture = CvCapture.FromCamera(captureID);
-        while (true) {
+        while (mainThread != null) {
             Mat mat = new Mat(capture.QueryFrame());
             byte[] imageData = mat.ToBytes(".jpg");
-            writer.WriteLine(Encoding.UTF8.GetString(imageData));
+            networkStream.Write(imageData, 0, imageData.Length);
             networkStream.Flush();
             Thread.Sleep(10);
         }
+
+        client.Close();
     }
 }

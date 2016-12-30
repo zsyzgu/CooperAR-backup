@@ -16,14 +16,17 @@ public class VideoManager : MonoBehaviour {
     const int PORT = 8888;
     const int BUFFER_LEN = 1048576;
 
-    public byte[][] videos = new byte[MAX_STUDENTS][];
-    public byte[] buffer = new byte[BUFFER_LEN];
+    public byte[][] videos;
+    public byte[] buffer;
     private Thread mainThread;
 
     void Awake() {
 		if (videoManager == null) {
             videoManager = this;
         }
+
+        videos = new byte[MAX_STUDENTS][];
+        buffer = new byte[BUFFER_LEN];
 
         mainThread = new Thread(serverThread);
         mainThread.Start();
@@ -48,11 +51,17 @@ public class VideoManager : MonoBehaviour {
 
     private void msgThread(TcpClient client) {
         NetworkStream networkStream = client.GetStream();
-        StreamReader reader = new StreamReader(networkStream);
 
         while (mainThread != null) {
-            videos[0] = Encoding.UTF8.GetBytes(reader.ReadLine());
+            int len = networkStream.Read(buffer, 0, buffer.Length);
+            if (len == 0) {
+                break;
+            }
+            videos[0] = new byte[len];
+            Array.Copy(buffer, videos[0], len);
         }
+
+        client.Close();
     }
 
     static public bool getFrame(int id, out Texture2D texture) {
