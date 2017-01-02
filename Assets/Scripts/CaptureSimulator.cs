@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.IO;
-using OpenCvSharp;
-using OpenCvSharp.CPlusPlus;
 
 #if WINDOWS_UWP
 using System;
@@ -18,11 +16,18 @@ public class CaptureSimulator : MonoBehaviour {
     const int PORT = 8888;
 
     public int captureID = 0;
-    private CvCapture capture;
+    private WebCamTexture webCamTexture;
+    private byte[] imageData;
 
-    private byte[] getData() {
-        Mat mat = new Mat(capture.QueryFrame());
-        return mat.ToBytes(".jpg");
+    void Start() {
+        webCamTexture = new WebCamTexture();
+        webCamTexture.Play();
+    }
+
+    void Update() {
+        Texture2D texture2D = new Texture2D(webCamTexture.width, webCamTexture.height);
+        texture2D.SetPixels(webCamTexture.GetPixels());
+        imageData = texture2D.EncodeToJPG();
     }
 
 #if WINDOWS_UWP
@@ -41,12 +46,12 @@ public class CaptureSimulator : MonoBehaviour {
         StreamSocket socket = new StreamSocket();
         await socket.ConnectAsync(new HostName(IP_ADDRESS), "" + PORT);
         Stream stream = socket.InputStream.AsStreamForRead();
-
-        capture = CvCapture.FromCamera(captureID);
+    
         while (mainTask != null) {
-            byte[] imageData = getData();
-            stream.Write(imageData, 0, imageData.Length);
-            stream.Flush();
+            if (imageData != null) {
+                stream.Write(imageData, 0, imageData.Length);
+                stream.Flush();
+            }
             await Task.Delay(TimeSpan.FromSeconds(0.01));
         }
     }
@@ -67,12 +72,12 @@ public class CaptureSimulator : MonoBehaviour {
         client.Connect(IP_ADDRESS, PORT);
 
         NetworkStream networkStream = client.GetStream();
-
-        capture = CvCapture.FromCamera(captureID);
+        
         while (mainThread != null) {
-            byte[] imageData = getData();
-            networkStream.Write(imageData, 0, imageData.Length);
-            networkStream.Flush();
+            if (imageData != null) {
+                networkStream.Write(imageData, 0, imageData.Length);
+                networkStream.Flush();
+            }
             Thread.Sleep(10);
         }
 

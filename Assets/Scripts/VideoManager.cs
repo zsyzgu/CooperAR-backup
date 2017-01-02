@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.IO;
 using System;
-using OpenCvSharp;
-using OpenCvSharp.CPlusPlus;
 
 #if WINDOWS_UWP
 using System.Threading.Tasks;
@@ -28,8 +26,7 @@ public class VideoManager : MonoBehaviour {
     
     static public bool getFrame(int id, out Texture2D texture) {
         if (videoManager.videos[id] != null) {
-            Mat mat = Mat.FromImageData(videoManager.videos[id], LoadMode.Color);
-            texture = new Texture2D(mat.Height, mat.Width, TextureFormat.RGB24, false, false);
+            texture = new Texture2D(640, 480, TextureFormat.RGB24, false, false);
             texture.LoadImage(videoManager.videos[id]);
             return true;
         } else {
