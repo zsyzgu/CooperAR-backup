@@ -108,7 +108,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &17927060
 Transform:
   m_ObjectHideFlags: 0
@@ -245,6 +245,47 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &214117129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 214117130}
+  - component: {fileID: 214117131}
+  m_Layer: 0
+  m_Name: CaptureSimulator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &214117130
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 214117129}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &214117131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 214117129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0438698fdfdcf6e49bfb299fb840cb0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  captureID: 0
 --- !u!1 &473538154
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,14 +295,13 @@ GameObject:
   m_Component:
   - component: {fileID: 473538155}
   - component: {fileID: 473538156}
-  - component: {fileID: 473538157}
   m_Layer: 0
-  m_Name: SocketSimulator
+  m_Name: OptitrackSimulator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &473538155
 Transform:
   m_ObjectHideFlags: 0
@@ -286,18 +326,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4a51f75ac0d9949beba0e38b76cf3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &473538157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 473538154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0438698fdfdcf6e49bfb299fb840cb0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  captureID: 0
 --- !u!1 &994943874
 GameObject:
   m_ObjectHideFlags: 0

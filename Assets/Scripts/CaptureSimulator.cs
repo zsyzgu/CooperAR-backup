@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.IO;
+using System;
 
 #if WINDOWS_UWP
-using System;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using Windows.Networking;
@@ -70,7 +70,6 @@ public class CaptureSimulator : MonoBehaviour {
     private void run() {
         TcpClient client = new TcpClient();
         client.Connect(IP_ADDRESS, PORT);
-
         NetworkStream networkStream = client.GetStream();
         
         while (mainThread != null) {
