@@ -15,7 +15,7 @@ public class Tracking : MonoBehaviour {
     static Tracking tracking = null;
     static int MAX_STUDENTS = StudentSpawner.MAX_STUDENTS;
 
-    const string IP_ADDRESS = "127.0.0.1";
+    const string IP_ADDRESS = "192.168.1.135"; //PC (should be OptiTrack)
     const int PORT = 8520;
 
     public class TrackingFrame {

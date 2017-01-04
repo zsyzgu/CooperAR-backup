@@ -12,22 +12,38 @@ using System.Threading;
 #endif
 
 public class CaptureSimulator : MonoBehaviour {
-    const string IP_ADDRESS = "127.0.0.1";
     const int PORT = 8888;
 
     public int captureID = 0;
     private WebCamTexture webCamTexture;
     private byte[] imageData;
+    private string serverIP;
+    private bool confirmed;
 
     void Start() {
         webCamTexture = new WebCamTexture();
         webCamTexture.Play();
+#if WINDOWS_UWP
+#else
+        serverIP = Network.player.ipAddress;
+#endif
     }
 
     void Update() {
-        Texture2D texture2D = new Texture2D(webCamTexture.width, webCamTexture.height);
-        texture2D.SetPixels(webCamTexture.GetPixels());
-        imageData = texture2D.EncodeToJPG();
+        Texture2D texture = new Texture2D(webCamTexture.width, webCamTexture.height);
+        texture.SetPixels(webCamTexture.GetPixels());
+        imageData = texture.EncodeToJPG();
+        Destroy(texture);
+        
+    }
+
+    void OnGUI() {
+        if (!confirmed) {
+            serverIP = GUI.TextArea(new Rect(0, 0, 300, 100), serverIP);
+            if (GUI.Button(new Rect(300, 0, 100, 100), "confirm")) {
+                confirmed = true;
+            }
+        }
     }
 
 #if WINDOWS_UWP
@@ -43,8 +59,12 @@ public class CaptureSimulator : MonoBehaviour {
     }
 
     private async void run() {
+        while (!confirmed) {
+            await Task.Delay(TimeSpan.FromSeconds(0.01));
+        }
+
         StreamSocket socket = new StreamSocket();
-        await socket.ConnectAsync(new HostName(IP_ADDRESS), "" + PORT);
+        await socket.ConnectAsync(new HostName(serverIP), "" + PORT);
         Stream stream = socket.InputStream.AsStreamForRead();
     
         while (mainTask != null) {
@@ -68,14 +88,19 @@ public class CaptureSimulator : MonoBehaviour {
     }
 
     private void run() {
+        while (!confirmed) {
+            Thread.Sleep(10);
+        }
+
         TcpClient client = new TcpClient();
-        client.Connect(IP_ADDRESS, PORT);
+        client.Connect(serverIP, PORT);
         NetworkStream networkStream = client.GetStream();
-        
+
         while (mainThread != null) {
             if (imageData != null) {
                 networkStream.Write(imageData, 0, imageData.Length);
                 networkStream.Flush();
+                networkStream.ReadByte();
             }
             Thread.Sleep(10);
         }

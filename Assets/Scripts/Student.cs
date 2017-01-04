@@ -31,6 +31,7 @@ public class Student : MonoBehaviour {
     private void dealVideo() {
         Texture2D texture;
         if (VideoManager.getFrame(id, out texture)) {
+            Destroy(rawImage.GetComponent<RawImage>().texture);
             rawImage.GetComponent<RawImage>().texture = texture;
         }
     }

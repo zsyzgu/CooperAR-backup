@@ -5,6 +5,7 @@ using System;
 #if WINDOWS_UWP
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
+using Windows.Networking.Connectivity;
 using Windows.Networking;
 #else
 using System.Threading;
@@ -16,13 +17,12 @@ using System.Text;
 public class VideoManager : MonoBehaviour {
     static VideoManager videoManager = null;
     static int MAX_STUDENTS = StudentSpawner.MAX_STUDENTS;
-
-    const string IP_ADDRESS = "127.0.0.1";
+    
     const int PORT = 8888;
     const int BUFFER_LEN = 1048576;
 
-    public byte[][] videos;
-    public byte[] buffer;
+    private byte[][] videos;
+    private byte[] buffer;
     
     static public bool getFrame(int id, out Texture2D texture) {
         if (videoManager.videos[id] != null) {
@@ -58,10 +58,21 @@ public class VideoManager : MonoBehaviour {
         mainTask = null;
     }
 
+    HostName getIP() {
+        foreach (HostName localHostName in NetworkInformation.GetHostNames()) {
+            if (localHostName.IPInformation != null) {
+                if (localHostName.Type == HostNameType.Ipv4) {
+                    return new HostName(localHostName.ToString());
+                }
+            }
+        }
+        return new HostName("127.0.0.1");
+    }
+
     private async void serverThread() {
         StreamSocketListener listener = new StreamSocketListener();
         listener.ConnectionReceived += connectionReceived;
-        await listener.BindServiceNameAsync("" + PORT);
+        await listener.BindEndpointAsync(getIP(), "" + PORT);
     }
 
     private async void connectionReceived(StreamSocketListener listener, StreamSocketListenerConnectionReceivedEventArgs args) {
@@ -74,13 +85,16 @@ public class VideoManager : MonoBehaviour {
             }
             videos[0] = new byte[len];
             Array.Copy(buffer, videos[0], len);
+            stream.WriteByte(0);
+            stream.Flush();
         }
     }
 #else
     private Thread mainThread;
 
     void startThread() {
-        mainThread = new Thread(serverThread);
+        string ipAddress = Network.player.ipAddress;
+        mainThread = new Thread(() => serverThread(ipAddress));
         mainThread.Start();
 	}
 
@@ -88,12 +102,10 @@ public class VideoManager : MonoBehaviour {
         mainThread = null;
     }
 
-    private void serverThread() {
-        IPAddress serverIP = IPAddress.Parse(IP_ADDRESS);
+    private void serverThread(string ipAddress) {
+        IPAddress serverIP = IPAddress.Parse(ipAddress);
         TcpListener listener = new TcpListener(serverIP, PORT);
-
         listener.Start();
-        
         while (mainThread != null) {
             TcpClient client = listener.AcceptTcpClient();
             Thread thread = new Thread(() => msgThread(client));
@@ -111,6 +123,8 @@ public class VideoManager : MonoBehaviour {
             }
             videos[0] = new byte[len];
             Array.Copy(buffer, videos[0], len);
+            networkStream.WriteByte(0);
+            networkStream.Flush();
         }
 
         client.Close();

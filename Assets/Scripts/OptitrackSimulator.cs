@@ -7,6 +7,7 @@ using System.IO;
 using System;
 using System.Threading.Tasks;
 using Windows.Networking.Sockets;
+using Windows.Networking;
 #else
 using System.Net;
 using System.Net.Sockets;
@@ -14,7 +15,6 @@ using System.Threading;
 #endif
 
 public class OptitrackSimulator : MonoBehaviour {
-    const string IP_ADDRESS = "127.0.0.1";
     const int PORT = 8520;
 
     private float ry = 0f;
@@ -45,7 +45,7 @@ public class OptitrackSimulator : MonoBehaviour {
     private async void run() {
         StreamSocketListener listener = new StreamSocketListener();
         listener.ConnectionReceived += connectionReceived;
-        await listener.BindServiceNameAsync("" + PORT);
+        await listener.BindEndpointAsync(new HostName("192.168.1.154"), "" + PORT);
     }
 
     private async void connectionReceived(StreamSocketListener listener, StreamSocketListenerConnectionReceivedEventArgs args) {
@@ -64,7 +64,8 @@ public class OptitrackSimulator : MonoBehaviour {
     private Thread mainThread;
     
 	void Awake() {
-        mainThread = new Thread(run);
+        string ipAddress = Network.player.ipAddress;
+        mainThread = new Thread(() => run(ipAddress));
         mainThread.Start();
 	}
 
@@ -72,13 +73,20 @@ public class OptitrackSimulator : MonoBehaviour {
         mainThread = null;
     }
 
-    private void run() {
-        IPAddress serverIP = IPAddress.Parse(IP_ADDRESS);
+    private void run(string ipAddress) {
+        IPAddress serverIP = IPAddress.Parse(ipAddress);
         TcpListener listener = new TcpListener(serverIP, PORT);
         listener.Start();
-        TcpClient client = listener.AcceptTcpClient();
+        while (mainThread != null) {
+            TcpClient client = listener.AcceptTcpClient();
+            Thread thread = new Thread(() => msgThread(client));
+            thread.Start();
+        }
+    }
+
+    private void msgThread(TcpClient client) {
         StreamWriter sw = new StreamWriter(client.GetStream());
-        
+
         while (mainThread != null) {
             sw.WriteLine("begin");
             sw.WriteLine(getRbMessage());
