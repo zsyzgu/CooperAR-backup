@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Windows.Networking.Sockets;
 using Windows.Networking.Connectivity;
 using Windows.Networking;
+using System.Net;
+using System.Net.Sockets;
 #else
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 #endif
 
 public class VideoManager : MonoBehaviour {
@@ -58,21 +59,21 @@ public class VideoManager : MonoBehaviour {
         mainTask = null;
     }
 
-    HostName getIP() {
+    string getIP() {
         foreach (HostName localHostName in NetworkInformation.GetHostNames()) {
             if (localHostName.IPInformation != null) {
                 if (localHostName.Type == HostNameType.Ipv4) {
-                    return new HostName(localHostName.ToString());
+                    return localHostName.ToString();
                 }
             }
         }
-        return new HostName("127.0.0.1");
+        return "127.0.0.1";
     }
 
     private async void serverThread() {
         StreamSocketListener listener = new StreamSocketListener();
         listener.ConnectionReceived += connectionReceived;
-        await listener.BindEndpointAsync(getIP(), "" + PORT);
+        await listener.BindEndpointAsync(new HostName(getIP()), "" + PORT);
     }
 
     private async void connectionReceived(StreamSocketListener listener, StreamSocketListenerConnectionReceivedEventArgs args) {
@@ -85,8 +86,6 @@ public class VideoManager : MonoBehaviour {
             }
             videos[0] = new byte[len];
             Array.Copy(buffer, videos[0], len);
-            stream.WriteByte(0);
-            stream.Flush();
         }
     }
 #else
@@ -123,8 +122,6 @@ public class VideoManager : MonoBehaviour {
             }
             videos[0] = new byte[len];
             Array.Copy(buffer, videos[0], len);
-            networkStream.WriteByte(0);
-            networkStream.Flush();
         }
 
         client.Close();

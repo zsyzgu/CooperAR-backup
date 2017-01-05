@@ -1,17 +1,14 @@
 ﻿using UnityEngine;
-using System.IO;
-using System;
 
 #if WINDOWS_UWP
-using System.Threading.Tasks;
-using Windows.Networking.Sockets;
-using Windows.Networking;
 #else
 using System.Net.Sockets;
 using System.Threading;
 #endif
 
 public class CaptureSimulator : MonoBehaviour {
+#if WINDOWS_UWP
+#else
     const int PORT = 8888;
 
     public int captureID = 0;
@@ -23,10 +20,7 @@ public class CaptureSimulator : MonoBehaviour {
     void Start() {
         webCamTexture = new WebCamTexture();
         webCamTexture.Play();
-#if WINDOWS_UWP
-#else
         serverIP = Network.player.ipAddress;
-#endif
     }
 
     void Update() {
@@ -34,7 +28,6 @@ public class CaptureSimulator : MonoBehaviour {
         texture.SetPixels(webCamTexture.GetPixels());
         imageData = texture.EncodeToJPG();
         Destroy(texture);
-        
     }
 
     void OnGUI() {
@@ -46,36 +39,6 @@ public class CaptureSimulator : MonoBehaviour {
         }
     }
 
-#if WINDOWS_UWP
-    private Task mainTask;
-
-    void Awake() {
-        mainTask = new Task(run);
-        mainTask.Start();
-    }
-
-    void OnApplicationQuit() {
-        mainTask = null;
-    }
-
-    private async void run() {
-        while (!confirmed) {
-            await Task.Delay(TimeSpan.FromSeconds(0.01));
-        }
-
-        StreamSocket socket = new StreamSocket();
-        await socket.ConnectAsync(new HostName(serverIP), "" + PORT);
-        Stream stream = socket.InputStream.AsStreamForRead();
-    
-        while (mainTask != null) {
-            if (imageData != null) {
-                stream.Write(imageData, 0, imageData.Length);
-                stream.Flush();
-            }
-            await Task.Delay(TimeSpan.FromSeconds(0.01));
-        }
-    }
-#else
     private Thread mainThread;
 
     void Awake() {
@@ -100,9 +63,8 @@ public class CaptureSimulator : MonoBehaviour {
             if (imageData != null) {
                 networkStream.Write(imageData, 0, imageData.Length);
                 networkStream.Flush();
-                networkStream.ReadByte();
+                imageData = null;
             }
-            Thread.Sleep(10);
         }
 
         client.Close();
